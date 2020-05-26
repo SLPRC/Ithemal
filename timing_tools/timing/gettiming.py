@@ -52,6 +52,13 @@ def add_memory_prefix(line):
         line = line[:index] + 'UserData + ' + line[index:]
     return line
 
+def insert_time_manual(cnx, time, code_id, arch, ttable):
+                  
+    sql = 'INSERT INTO ' + ttable + ' (code_id, arch, time_actual)  VALUES(' + str(code_id) + ',' + str(arch) + ',' + str(time) + ')'
+    #print sql
+    ut.execute_query(cnx, sql, False)
+    cnx.commit()
+
 def insert_col_values(cnx, cols, values, code_id, arch, ttable):
         
     colstr = ''
@@ -300,8 +307,12 @@ if __name__ == '__main__':
                             #print float(total_bbs)/total_time
                             success += 1
                         else:
-			                print("counters are None, code id=%d\n", row[1])
+                            insert_time_manual(cnx, -1, row[1], args.arch, args.ttable)
+                            print("counters are None, code id=%d\n", row[1])
+                            for line in final_bb:
+                                print line[:-1]
                     else:
+                        insert_time_manual(cnx, -1, row[1], args.arch, args.ttable)
                         print("Program output error, code id=%d\n", row[1])
                         for line in final_bb:
                             print line[:-1]
@@ -309,10 +320,14 @@ if __name__ == '__main__':
                 except Exception as e:
                     print e
                     print 'exception occurred'
-                    except_errors += 1         
+                    except_errors += 1   
+                    print('code_id=' + str(row[1]))     
             else:
+                insert_time_manual(cnx, -1, row[1], args.arch, args.ttable)
                 print 'error program not completed '
                 print("code id is %d\n", row[1])
+                for line in final_bb:
+                    print line[:-1]
                 not_finished += 1
         else:
 		    print("enmpty code for code id%d\n", row[1])

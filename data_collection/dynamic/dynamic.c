@@ -62,21 +62,22 @@ bool dump_bb(void * drcontext, code_embedding_t embedding_func, code_info_t * ci
   if(cinfo->code_size == -1)
     return false;
   
-  sz = insert_code(query, cinfo);
-  if(sz == -1)
-    return false;
-  DR_ASSERT(sz <= MAX_QUERY_SIZE);
-  write_to_file(bk->static_file,query,sz);
+  if(cinfo->code_size > 0)//dont write empty blocks
+  {
+    sz = insert_code(query, cinfo);
+    if(sz == -1)
+      return false;
+    DR_ASSERT(sz <= MAX_QUERY_SIZE);
+    write_to_file(bk->static_file,query,sz);
 
-  sz = insert_code_metadata(query, cinfo);
-  if(sz == -1)
-    return false;  
-  DR_ASSERT(sz <= MAX_QUERY_SIZE);
-  write_to_file(bk->static_file,query,sz);
-
+    sz = insert_code_metadata(query, cinfo);
+    if(sz == -1)
+      return false;  
+    DR_ASSERT(sz <= MAX_QUERY_SIZE);
+    write_to_file(bk->static_file,query,sz);
+  }
 
   return true;
-
 } 
 
 bool dump_disasm(void * drcontext, code_embedding_t embedding_func, code_info_t * cinfo, instrlist_t * bb, bookkeep_t * bk, query_t * query, uint32_t type){
@@ -88,16 +89,16 @@ bool dump_disasm(void * drcontext, code_embedding_t embedding_func, code_info_t 
   if(cinfo->code_size == -1)
     return false;
   
-  sz = insert_disassembly(query, cinfo, type);
-  if(sz == -1)
-    return false;
-  DR_ASSERT(sz <= MAX_QUERY_SIZE);
-  write_to_file(bk->static_file, query, sz);
+  if(cinfo->code_size > 0)//dont write empty blocks
+  {
+    sz = insert_disassembly(query, cinfo, type);
+    if(sz == -1)
+      return false;
+    DR_ASSERT(sz <= MAX_QUERY_SIZE);
+    write_to_file(bk->static_file, query, sz);
+  }
 
   return true;
-  
-
-
 }
 
 //bb analysis routines

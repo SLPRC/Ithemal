@@ -83,12 +83,14 @@ WORKDIR /home/ithemal
 # non-login shell
 RUN /bin/echo 'export PATH=/opt/conda/bin:$PATH' >> /home/ithemal/.bash_profile && \
         /bin/echo 'source activate ithemal' >> /home/ithemal/.bash_profile && \
-        /bin/echo 'export PYTHONPATH="/home/ithemal/ithemal/learning/pytorch"' >> /home/ithemal/.bash_profile
+        /bin/echo 'export PYTHONPATH="/home/ithemal/ithemal/learning/pytorch"' >> /home/ithemal/.bash_profile && \
+        /bin/echo 'export LD_LIBRARY_PATH=$DYNAMORIO_HOME/lib64/debug:$LD_LIBRARY_PATH' >> /home/ithemal/.bash_profile
 
 # login shell
 RUN /bin/echo 'export PATH=/opt/conda/bin:$PATH' >> /home/ithemal/.bashrc && \
         /bin/echo 'source activate ithemal' >> /home/ithemal/.bashrc && \
-        /bin/echo 'export PYTHONPATH="/home/ithemal/ithemal/learning/pytorch"' >> /home/ithemal/.bashrc
+        /bin/echo 'export PYTHONPATH="/home/ithemal/ithemal/learning/pytorch"' >> /home/ithemal/.bashrc && \
+        /bin/echo 'export LD_LIBRARY_PATH=$DYNAMORIO_HOME/lib64/debug:$LD_LIBRARY_PATH' >> /home/ithemal/.bashrc
 
 RUN bash -lc 'pip install --upgrade --user pyhamcrest pip; jupyter notebook --generate-config'
 

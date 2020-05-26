@@ -5,7 +5,7 @@
 %define sys_exit    60
 %define sys_read    0
 
-%define iterations 16
+%define iterations 32
 
 %define shm_fd 42
 

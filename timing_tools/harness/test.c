@@ -28,7 +28,7 @@
 
 #define CTX_SWTCH_FD 100
 
-#define ITERS 16
+#define ITERS 32
 
 #define OFFSET_TO_COUNTERS 32
 

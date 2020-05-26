@@ -130,11 +130,11 @@ void parse_elf_binary(void * drcontext, unsigned char * buf, char * metafilename
       if(!start_pc) dr_printf("invalid instruction\n"); 
       if(!start_pc) break;
       if(instr_is_cti(instr)){
-	dump_sql(drcontext, elfname, current_list, start_bb - buf, sql);
-	instrlist_clear(drcontext, current_list);
-	start_bb = start_pc;
-	bbnum++;
-	if(bbnum % 100000 == 0) printf("bbnum-%d\n",bbnum);
+        dump_sql(drcontext, elfname, current_list, start_bb - buf, sql);
+        instrlist_clear(drcontext, current_list);
+        start_bb = start_pc;
+        bbnum++;
+        if(bbnum % 100000 == 0) printf("bbnum-%d\n",bbnum);
       }
     }
     fnum++;     

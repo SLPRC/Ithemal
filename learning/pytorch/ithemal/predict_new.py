@@ -100,11 +100,17 @@ def predict_compare(args, model, data, verbose):
             if len(timeActual) > 1:
                 #print(', '.join(timeActual))
                 raise ValueError('code_id is not unique in time table')
+            #print('code_id=%d\n',row[0])
             #print(timeActual)
-            f.write(str(timePredict) + ', ' + str(timeActual[0][0]) + ', ' + str(abs(timePredict-timeActual[0][0])/timeActual[0][0]) + '\n') 
+            if timeActual[0][0] == -1:
+                err = 1
+            else:
+                err = abs(timePredict-timeActual[0][0])/timeActual[0][0]
+            f.write(str(timePredict) + ', ' + str(timeActual[0][0]) + ', ' + str(err) + '\n') 
         except Exception as e:
             print(e)
-            print('exception occurred') 
+            print('exception occurred')
+            print('code_id='+str(row[0])) 
 
     f.close()
     cnx.close()
