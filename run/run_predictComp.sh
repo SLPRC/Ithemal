@@ -1,0 +1,1 @@
+python /home/ithemal/ithemal/learning/pytorch/ithemal/predict_new.py --model /home/ithemal/ithemal/run/input/paper/haswell/predictor.dump --model-data /home/ithemal/ithemal/run/input/paper/haswell/trained.mdl --predict_compare --database ithemal --user root --password ithemal --ctable code --ttable time

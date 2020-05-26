@@ -9,4 +9,4 @@ unzip -o models.zip
 popd
 
 pip install --user flask gunicorn
-~/.local/bin/gunicorn apithemal:app -w 16 -b 0.0.0.0:5000
+~/.local/bin/gunicorn apithemal:app -w 4 -b 0.0.0.0:5000

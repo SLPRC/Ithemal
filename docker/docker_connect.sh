@@ -67,7 +67,7 @@ if [[ -z "${CONTAINER}" ]]; then
 	rmdir /tmp/.X11-unix
     fi
 
-    sudo docker exec -u ithemal "${CONTAINER}" bash -lc 'ithemal/build_all.sh'
+    sudo docker exec -u "${USER}" "${CONTAINER}" bash -lc 'ithemal/build_all.sh'  
 fi
 
 sudo docker exec -u "${USER}" -it "${CONTAINER}" /home/ithemal/ithemal/aws/aws_utils/tmux_attach.sh

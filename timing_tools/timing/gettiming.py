@@ -52,33 +52,24 @@ def add_memory_prefix(line):
         line = line[:index] + 'UserData + ' + line[index:]
     return line
 
+def insert_col_values(cnx, cols, values, code_id, arch, ttable):
+        
+    colstr = ''
+    valuestr = ''
 
-def insert_time_value(cnx,code_id, time, arch, ttable):
+    for j, col in enumerate(cols): 
+        if j != len(cols) - 1:
+            colstr += col + ', '
+            valuestr += str(values[j]) + ', '
+        else:
+            colstr += col
+            valuestr += str(values[j])
+            
 
-    sql = 'INSERT INTO ' + ttable + ' (code_id, arch, kind, time) VALUES(' + str(code_id) + ',' + str(arch) + ',\'actual\',' + str(time) + ')'
+    sql = 'INSERT INTO ' + ttable + ' (code_id, arch, ' + colstr + ')  VALUES(' + str(code_id) + ',' + str(arch) + ',' + valuestr + ')'
+    #print sql
     ut.execute_query(cnx, sql, False)
     cnx.commit()
-
-def insert_col_values(cnx, cols, values, code_id, arch, ttable):
-
-    for i in range(len(values[0])):
-        
-        colstr = ''
-        valuestr = ''
-
-        for j, col in enumerate(cols): 
-            if j != len(cols) - 1:
-                colstr += col + ', '
-                valuestr += str(values[j][i]) + ', '
-            else:
-                colstr += col
-                valuestr += str(values[j][i])
-                
-
-        sql = 'INSERT INTO ' + ttable + ' (code_id, arch, kind,' + colstr + ')  VALUES(' + str(code_id) + ',' + str(arch) + ',\'actual\',' + valuestr + ')'
-        print sql
-        ut.execute_query(cnx, sql, False)
-        cnx.commit()
 
 
 class PMCValue:
@@ -247,8 +238,6 @@ if __name__ == '__main__':
                 final_bb.append(line)
                 written += 1
 
-
-
         if written > 0:
             total += 1
             with open('bb.nasm','w+') as f:
@@ -259,9 +248,7 @@ if __name__ == '__main__':
             end_time = time.time()
 
             if result != None:
-
-                print final_bb
-
+                #print final_bb
                 try:
                     error_lines = False
                     for line in iter(proc.stderr.readline, ''):
@@ -275,7 +262,7 @@ if __name__ == '__main__':
                         startTimes = False
                         counters = None
                         for i, line in enumerate(iter(proc.stdout.readline, '')):
-                            print line
+                            #print line
                             if 'Clock' in line and startTimes == False and startHeading == False: #still didn't start collecting the actual timing data
                                 startHeading = True
                             if startHeading == True:
@@ -287,49 +274,53 @@ if __name__ == '__main__':
                                 #print 'values ' + line
                                 counters.add_to_counters(line)
                         if counters != None:
-
+                            counters.set_modes()
+                            
                             names = ['Core_cyc', 'L1_read_misses', 'L1_write_misses', 'iCache_misses', 'Context_switches']
-                            columns = ['time', 'l1drmisses', 'l1dwmisses', 'l1imisses', 'conswitch']
+                            columns = ['time_actual', 'l1drmisses', 'l1dwmisses', 'l1imisses', 'conswitch']
 
                             values = []
                             aval_cols = []
 
                             for i, name in enumerate(names):
-                                vs = counters.get_value(name)
+                                vs = counters.get_mode(name)
                                 if vs != None:
                                     values.append(vs)
                                     aval_cols.append(columns[i])
                                     if name == 'Core_cyc':
-                                        for j, v in enumerate(values[-1]):
-                                            values[-1][j] -= overhead
-                            print aval_cols, values
+                                        values[-1] -= overhead
+                            #print aval_cols, values
 
                             if not args.tp:
+                                #print('code_id ' + str(row[1]))
                                 insert_col_values(cnx, aval_cols, values, row[1], args.arch, args.ttable)
                                     
                             total_time += end_time - start_time
                             total_bbs += 1
-                            print float(total_bbs)/total_time
+                            #print float(total_bbs)/total_time
                             success += 1
+                        else:
+			                print("counters are None, code id=%d\n", row[1])
                     else:
+                        print("Program output error, code id=%d\n", row[1])
                         for line in final_bb:
                             print line[:-1]
                         errors += 1
                 except Exception as e:
                     print e
                     print 'exception occurred'
-                    except_errors += 1
-
+                    except_errors += 1         
             else:
-                print 'error not completed'
+                print 'error program not completed '
+                print("code id is %d\n", row[1])
                 not_finished += 1
+        else:
+		    print("enmpty code for code id%d\n", row[1])
 
         if args.limit != None:
             if success == args.limit:
                 break
 
-        print total, success, errors, not_finished, except_errors
+        #print str(row[1]), total, success, errors, not_finished, except_errors
 
-
-    print overhead
     cnx.close()

@@ -31,19 +31,19 @@ RUN wget -O /tmp/RPM-GPG-KEY-mysql https://repo.mysql.com/RPM-GPG-KEY-mysql && \
 
 COPY docker_my.cnf /etc/my.cnf
 
-RUN wget --quiet -O /tmp/install_conda.sh https://repo.continuum.io/miniconda/Miniconda2-4.6.14-Linux-x86_64.sh && \
+RUN wget --quiet -O /tmp/install_conda.sh https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh && \
         sh /tmp/install_conda.sh -b -p /opt/conda && \
         rm /tmp/install_conda.sh
 
 RUN /opt/conda/bin/conda create --name ithemal python=2.7
 RUN /opt/conda/bin/conda install -q -n ithemal -c pytorch pytorch=1.1.0
+RUN /opt/conda/bin/conda install -q -n ithemal -c free ipython-notebook=4.0.4
+RUN /opt/conda/bin/conda install -q -n ithemal -c free mysql-connector-python=2
 RUN /opt/conda/bin/conda install -q -n ithemal \
         cython=0.29 \
         graphviz=2.40.1 \
         ipython=5.8.0 \
-        ipython-notebook=4.0.4 \
         matplotlib=2.2.3 \
-        mysql-connector-python=2 \
         numpy=1.15 \
         pandas=0.23.4 \
         psutil=5.4.7 \
@@ -61,8 +61,8 @@ RUN /opt/conda/bin/conda install -q -n ithemal \
 
 RUN /opt/conda/bin/conda install -q -n ithemal -c conda-forge awscli
 
-RUN curl -sL https://github.com/DynamoRIO/dynamorio/releases/download/release_7_0_0_rc1/DynamoRIO-Linux-7.0.0-RC1.tar.gz | tar xz -C /opt
-ENV DYNAMORIO_HOME "/opt/DynamoRIO-Linux-7.0.0-RC1"
+RUN curl -sL https://github.com/DynamoRIO/dynamorio/releases/download/release_7.1.0/DynamoRIO-Linux-7.1.0-1.tar.gz | tar xz -C /opt
+ENV DYNAMORIO_HOME "/opt/DynamoRIO-Linux-7.1.0-1"
 # tar will not give you `755 & ~umask` because tar is evil
 RUN chown -R root:root "${DYNAMORIO_HOME}" && \
         find "${DYNAMORIO_HOME}" -type d -exec chmod 755 {} \; && \
@@ -76,7 +76,7 @@ ENV LC_ALL en_US.UTF-8
 ARG HOST_UID=1000
 ENV HOST_UID $HOST_UID
 
-RUN groupadd -g 1000 ithemal && useradd -m -s /bin/bash -r -u $HOST_UID -g ithemal ithemal
+RUN groupadd -g 1000 ithemal && useradd -m -s /bin/bash -r -u $HOST_UID -g ithemal ithemal && usermod -aG sudo ithemal && echo "ithemal:ithemal" | chpasswd
 USER ithemal
 WORKDIR /home/ithemal
 

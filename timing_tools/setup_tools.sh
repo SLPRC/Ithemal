@@ -44,7 +44,7 @@ if [ ! -d "llvm-build/bin/llvm-mca" ]; then
     mkdir -p llvm-build
     cd llvm-build
     cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 ../llvm
-    make -j24 llvm-mca
+    make -j4 llvm-mca
 else
     echo "llvm-mca already built"
 fi
