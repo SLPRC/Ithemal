@@ -79,7 +79,7 @@ def predict_compare(args, model, data, verbose):
 
     try:    
         f = open('results.csv', 'w')
-        f.write('predicated, actual, acuracy\n')
+        f.write('predicated, actual, accuracy\n')
     except Exception as e:
         print(e)
         print('cannot create result file!\n')
